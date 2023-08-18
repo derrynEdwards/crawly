@@ -10,7 +10,7 @@ function getURLsFromHTML(htmlBody, baseURL) {
             try {
                 urls.push(new URL(aElement.href, baseURL).href);
             } catch (err) {
-                console.log(`${err.message}: ${aElement.href}`)
+                console.log(`${err.message}: ${aElement.href}`);
             };
         } else {
             try {
