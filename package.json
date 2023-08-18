@@ -4,7 +4,8 @@
   "description": "Node.js Web Crawler Project from Boot.dev",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js"
+    "start": "node main.js",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/derrynEdwards/crawly/issues"
   },
-  "homepage": "https://github.com/derrynEdwards/crawly#readme"
+  "homepage": "https://github.com/derrynEdwards/crawly#readme",
+  "devDependencies": {
+    "jest": "^29.6.2"
+  }
 }
