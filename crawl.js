@@ -1,5 +1,29 @@
 const { JSDOM } = require('jsdom');
 
+async function callUrl(url) {
+    try {
+        const resp = await fetch(url);
+
+        if (resp.status > 399) {
+            console.error(`Got HTTP error, status code: ${resp.status}`);
+            retrun
+        }
+        
+        const contentType = resp.headers.get('content-type');
+
+        if (!contentType.includes('text/html')) {
+            console.error(`Got non-html response: ${contentType}`);
+            return
+        }
+
+       return await resp.text();
+
+    } catch (err) {
+        console.error(`Error calling ${url}...`);
+        console.error(`Error: ${err.message}`);
+    };
+};
+
 function getURLsFromHTML(htmlBody, baseURL) {
     const urls = [];
     const dom = new JSDOM(htmlBody);
@@ -42,5 +66,6 @@ function normalizeURL(url) {
 
 module.exports = {
     normalizeURL,
-    getURLsFromHTML
+    getURLsFromHTML,
+    callUrl
 };
