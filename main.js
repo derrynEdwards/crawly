@@ -1,4 +1,5 @@
-const { normalizeURL, getURLsFromHTML, crawlPage } = require('./crawl.js');
+const { crawlPage } = require('./crawl.js');
+const { printReport } = require('./report.js');
 
 function checkUrl(url) {
     try {
@@ -30,7 +31,7 @@ async function main() {
 
     const pages = await crawlPage(baseURL, baseURL, {});
 
-    console.log(pages);
+    printReport(pages, baseURL);
 };
 
 main();

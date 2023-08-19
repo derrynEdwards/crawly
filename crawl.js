@@ -23,7 +23,12 @@ async function crawlPage(baseUrl, currentUrl, pages) {
 
     let htmlBody = '';
     try {
-        const resp = await fetch(currentUrl);
+        const resp = await fetch(currentUrl, {
+            method: 'GET',
+            headers: {
+                'User-Agent': 'Crawly Bot 1.0.0'
+            }
+        });
 
         if (resp.status > 399) {
             console.error(`Got HTTP error, status code: ${resp.status}`);
@@ -59,18 +64,22 @@ function getURLsFromHTML(htmlBody, baseURL) {
     const aElements = dom.window.document.querySelectorAll('a');
 
     for (const aElement of aElements) {
-        if (aElement.href.slice(0, 1) === '/') {
-            try {
-                urls.push(new URL(aElement.href, baseURL).href);
-            } catch (err) {
-                console.log(`${err.message}: ${aElement.href}`);
+        try {
+            if (aElement.href.slice(0, 1) === '/') {
+                try {
+                    urls.push(new URL(aElement.href, baseURL).href);
+                } catch (err) {
+                    console.log(`${err.message}: ${aElement.href}`);
+                };
+            } else {
+                try {
+                    urls.push(new URL(aElement.href).href);
+                } catch (err) {
+                    console.log(`${err.message}: ${aElement.href}`);
+                };
             };
-        } else {
-            try {
-                urls.push(new URL(aElement.href).href);
-            } catch (err) {
-                console.log(`${err.message}: ${aElement.href}`);
-            };
+        } catch (err) {
+            console.error(err.message);
         };
     };
     return urls;
