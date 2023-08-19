@@ -1,27 +1,56 @@
 const { JSDOM } = require('jsdom');
 
-async function callUrl(url) {
+async function crawlPage(baseUrl, currentUrl, pages) {
+    const currentUrlObj = new URL(currentUrl);
+    const baseUrlObj = new URL(baseUrl);
+    
+    if (currentUrlObj.hostname !== baseUrlObj.hostname) {
+        return pages;
+    };
+
+    const normalizedURL = normalizeURL(currentUrl);
+
+    if (pages[normalizedURL] > 0) {
+        pages[normalizedURL]++;
+        return pages;
+    };
+
+    if (currentUrl === baseUrl) {
+        pages[normalizedURL] = 0;
+    } else {
+        pages[normalizedURL] = 1
+    };
+
+    let htmlBody = '';
     try {
-        const resp = await fetch(url);
+        const resp = await fetch(currentUrl);
 
         if (resp.status > 399) {
             console.error(`Got HTTP error, status code: ${resp.status}`);
-            retrun
+            return pages;
         }
         
         const contentType = resp.headers.get('content-type');
 
         if (!contentType.includes('text/html')) {
             console.error(`Got non-html response: ${contentType}`);
-            return
+            return pages;
         }
 
-       return await resp.text();
+        htmlBody = await resp.text();
 
     } catch (err) {
-        console.error(`Error calling ${url}...`);
+        console.error(`Error calling ${baseUrl}...`);
         console.error(`Error: ${err.message}`);
     };
+
+    const nextURLs = getURLsFromHTML(htmlBody, baseUrl);
+
+    for (const nextURL of nextURLs) {
+        pages = await crawlPage(baseUrl, nextURL, pages);
+    };
+
+    return pages;
 };
 
 function getURLsFromHTML(htmlBody, baseURL) {
@@ -67,5 +96,5 @@ function normalizeURL(url) {
 module.exports = {
     normalizeURL,
     getURLsFromHTML,
-    callUrl
+    crawlPage
 };
